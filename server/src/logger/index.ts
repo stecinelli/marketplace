@@ -1,13 +1,12 @@
-import dayjs from 'dayjs';
+const pino = require('pino');
 
-const pino = require('pino')
 const log = pino({
   transport: {
     target: 'pino-pretty',
     options: {
-      colorize: true
-    }
-  }
+      colorize: true,
+    },
+  },
 });
 
-export default log; 
+export default log;

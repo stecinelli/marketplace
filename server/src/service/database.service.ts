@@ -1,16 +1,14 @@
 // External Dependencies
-import * as mongoDB from "mongodb";
+import * as mongoDB from 'mongodb';
 import config from '../../config/default';
-import log from "../logger";
-
+import log from '../logger';
 
 // Global Variables
-export const collections: { products?: mongoDB.Collection } = {}
+export const collections: { products?: mongoDB.Collection } = {};
 
 // Initialize Connection
 
 export async function connectToDatabase() {
-
   const client: mongoDB.MongoClient = new mongoDB.MongoClient(config.dbUri);
 
   await client.connect();
