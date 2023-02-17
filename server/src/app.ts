@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: false }));
 
 connectToDatabase()
   .then(() => {
-    app.use('/products', router);
+    app.use('/api', router);
 
     app.listen(port, host, () => {
       log.info(`Server listing at http://${host}:${port}`);

@@ -1,7 +1,11 @@
+import * as dotenv from 'dotenv'
+dotenv.config()
+
 export default {
   port: 3001,
   host: 'localhost',
-  dbUri: 'mongodb+srv://mongouser:<mongouser>@cluster0.ff7kq0j.mongodb.net/?retryWrites=true&w=majority',
-  dbName: 'marketplace',
-  dbCollection: 'products',
+  dbUri: process.env.DB_CONN_STRING || '',
+  dbName: process.env.DB_NAME || '',
+  dbCollectionProducts: process.env.PRODUCTS_COLLECTION_NAME || '',
+  saltWorkFactor: 10,
 };

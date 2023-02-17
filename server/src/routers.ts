@@ -1,10 +1,11 @@
-// External Dependencies
-
 import express, { Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { collections } from './service/database.service';
 import log from './logger';
 import Products from './model/marketplace-db';
+import validate from './middleware/validateRequest';
+import { createUserSchema } from './schema/user.schema';
+import { createUserHandler } from './controller/user.controller';
 
 // Global Config
 
@@ -12,19 +13,20 @@ export const router = express.Router();
 
 router.use(express.json());
 
-// GET
+// GET Product
 
-router.get('/', async (_req: Request, res: Response) => {
+router.get('/products', async (_req: Request, res: Response) => {
   try {
     const products = (await collections.products?.find({}).toArray()) as Products[];
 
     res.status(200).send(products);
   } catch (error: any) {
+    console.error(error);
     res.status(500).send(error.message);
   }
 });
 
-router.get('/:id', async (req: Request, res: Response) => {
+router.get('/products/:id', async (req: Request, res: Response) => {
   const id = req?.params?.id;
 
   try {
@@ -39,45 +41,45 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 });
 
-// POST
+// POST Product
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/products', async (req: Request, res: Response) => {
   try {
-    const newGame = req.body as Products;
-    const result = await collections.products?.insertOne(newGame);
+    const newProduct = req.body as Products;
+    const result = await collections.products?.insertOne(newProduct);
 
     result
-      ? res.status(201).send(`Successfully created a new game with id ${result.insertedId}`)
-      : res.status(500).send('Failed to create a new game.');
+      ? res.status(201).send(`Successfully created a new product with id ${result.insertedId}`)
+      : res.status(500).send('Failed to create a new product.');
   } catch (error: any) {
     log.error(error);
     res.status(400).send(error.message);
   }
 });
 
-// PUT
+// PUT Product
 
-router.put('/:id', async (req: Request, res: Response) => {
+router.put('/products/:id', async (req: Request, res: Response) => {
   const id = req?.params?.id;
 
   try {
-    const updatedGame: Products = req.body as Products;
+    const updatedProduct: Products = req.body as Products;
     const query = { _id: new ObjectId(id) };
 
-    const result = await collections.products?.updateOne(query, { $set: updatedGame });
+    const result = await collections.products?.updateOne(query, { $set: updatedProduct });
 
     result
-      ? res.status(200).send(`Successfully updated game with id ${id}`)
-      : res.status(304).send(`Game with id: ${id} not updated`);
+      ? res.status(200).send(`Successfully updated product with id ${id}`)
+      : res.status(304).send(`Product with id: ${id} not updated`);
   } catch (error: any) {
     console.error(error.message);
     res.status(400).send(error.message);
   }
 });
 
-// DELETE
+// DELETE Product
 
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/products/:id', async (req: Request, res: Response) => {
   const id = req?.params?.id;
 
   try {
@@ -85,14 +87,22 @@ router.delete('/:id', async (req: Request, res: Response) => {
     const result = await collections.products?.deleteOne(query);
 
     if (result && result.deletedCount) {
-      res.status(202).send(`Successfully removed game with id ${id}`);
+      res.status(202).send(`Successfully removed product with id ${id}`);
     } else if (!result) {
-      res.status(400).send(`Failed to remove game with id ${id}`);
+      res.status(400).send(`Failed to remove product with id ${id}`);
     } else if (!result.deletedCount) {
-      res.status(404).send(`Game with id ${id} does not exist`);
+      res.status(404).send(`Product with id ${id} does not exist`);
     }
   } catch (error: any) {
     console.error(error.message);
     res.status(400).send(error.message);
   }
 });
+
+
+// POST User (register user)
+router.post('/users', validate(createUserSchema), createUserHandler);
+
+// POST Sessions (Login)
+// GET Sessions (check login)
+// DELETE Sessions (Logout)

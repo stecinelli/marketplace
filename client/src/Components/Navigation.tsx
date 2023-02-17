@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 function Navigation() {
   return (
     <div className="navigation">
-      <nav className="navbar navbar-expand navbar-dark bg-dark">
+      <nav className="navbar navbar-expand navbar-dark bg-primary" data-bs-theme="dark">
         <div className="container">
           <NavLink className="navbar-brand" to="/">
             MARKETPLACE
